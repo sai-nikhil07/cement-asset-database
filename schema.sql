@@ -1,0 +1,79 @@
+-- Cement Asset-Level Database (India) | Complete Automated Build Script
+CREATE DATABASE IF NOT EXISTS cement_assets;
+USE cement_assets;
+
+DROP TABLE IF EXISTS assets;
+DROP TABLE IF EXISTS assets_raw;
+DROP TABLE IF EXISTS companies;
+
+-- 1. Staging table (all text so raw data loads without failing)
+CREATE TABLE assets_raw (
+    Asset_ID            VARCHAR(20),
+    Company             VARCHAR(100),
+    Plant_Name          VARCHAR(150),
+    State               VARCHAR(60),
+    District_or_City    VARCHAR(80),
+    Plant_Type          VARCHAR(30),
+    Capacity_MTPA       VARCHAR(20),
+    Status              VARCHAR(30),
+    Year_Commissioned   VARCHAR(10),
+    Source_Document     VARCHAR(200),
+    Source_Page_or_URL  VARCHAR(400),
+    Collected_Date      VARCHAR(20)
+);
+
+-- 2. Clean normalized tables
+CREATE TABLE companies (
+    company_id    INT AUTO_INCREMENT PRIMARY KEY,
+    company_name  VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE assets (
+    asset_id           VARCHAR(20) PRIMARY KEY,
+    company_id         INT NOT NULL,
+    plant_name         VARCHAR(150) NOT NULL,
+    state              VARCHAR(60),
+    district_or_city   VARCHAR(80),
+    plant_type         ENUM('Integrated','Grinding Unit','Clinker Unit'),
+    capacity_mtpa      DECIMAL(6,2),
+    status             ENUM('Operating','Under Construction'),
+    year_commissioned  YEAR,
+    source_document    VARCHAR(200) NOT NULL,
+    source_page_or_url VARCHAR(400),
+    collected_date     DATE,
+    FOREIGN KEY (company_id) REFERENCES companies(company_id)
+);
+
+-- 3. Populate staging table directly (31 raw records including 3 intentional quality errors)
+INSERT INTO assets_raw VALUES
+('A001','UltraTech Cement','Aditya Cement Works','Rajasthan','Chittorgarh','Integrated','5.00','Operating','1995','UltraTech Integrated Report FY24-25','https://www.ultratechcement.com/about-us/overview','2026-10-30'),
+('A002','UltraTech Cement','Rajashree Cement Works','Karnataka','Kalaburagi','Integrated','8.40','Operating','1984','UltraTech Integrated Report FY24-25','https://www.ultratechcement.com/about-us/overview','2026-10-30'),
+('A003','UltraTech Cement','Dhar Cement Works','Madhya Pradesh','Dhar','Integrated','3.50','Operating','2018','UltraTech Our Story Milestone Report','https://www.ultratechcement.com/about-us/our-story','2026-10-30'),
+('A004','UltraTech Cement','Karur Grinding Unit','Tamil Nadu','Karur','Grinding Unit','3.30','Operating','2024','BSE Exchange Filing Feb 2025','p.1','2026-10-30'),
+('A005','UltraTech Cement','Patratu Grinding Unit','Jharkhand','Ramgarh','Grinding Unit','3.00','Operating','2026','NSE Commissioning Filing Apr 2026','p.1','2026-10-30'),
+('A006','Shree Cement','Beawar Plant','Rajasthan','Ajmer','Integrated','3.80','Operating','1985','Shree Cement Annual Report FY24-25','https://www.shreecement.com/manufacturing-facilities','2026-10-30'),
+('A007','Shree Cement','Ras Integrated Unit','Rajasthan','Pali','Integrated','12.00','Operating','2009','Shree Cement Annual Report FY24-25','https://www.shreecement.com/manufacturing-facilities','2026-10-30'),
+('A008','Shree Cement','Kodla Plant','Karnataka','Kalaburagi','Integrated','3.00','Operating','2018','Shree Cement Annual Report FY24-25','https://www.shreecement.com/manufacturing-facilities','2026-10-30'),
+('A009','Shree Cement','Nawalgarh Plant','Rajasthan','Jhunjhunu','Integrated','3.50','Operating','2024','Shree Cement Investor Presentation 2025','p.14','2026-10-30'),
+('A010','Dalmia Bharat','Dalmiapuram Plant','Tamil Nadu','Tiruchirappalli','Integrated','4.00','Operating','1939','Dalmia Bharat Integrated Report FY24-25','https://www.dalmiacement.com/about-us/manufacturing-facilities/','2026-10-30'),
+('A011','Dalmia Bharat','Kadapa Plant','Andhra Pradesh','Kadapa','Integrated','2.60','Operating','2009','Dalmia Bharat Integrated Report FY24-25','https://www.dalmiacement.com/about-us/manufacturing-facilities/','2026-10-30'),
+('A012','Dalmia Bharat','Rajgangpur Plant','Odisha','Sundargarh','Integrated','4.00','Operating','1951','Dalmia Bharat Integrated Report FY24-25','https://www.dalmiacement.com/about-us/manufacturing-facilities/','2026-10-30'),
+('A013','Dalmia Bharat','Belgaum Plant','Karnataka','Belagavi','Integrated','2.60','Operating','2015','Dalmia Bharat Integrated Report FY24-25','p.22','2026-10-30'),
+('A014','Dalmia Bharat','Lanka Grinding Unit','Assam','Hojai','Grinding Unit','2.40','Under Construction','2026','Dalmia Bharat Capex Update FY25','p.8','2026-10-30'),
+('A015','JK Cement','Nimbahera Plant','Rajasthan','Chittorgarh','Integrated','5.20','Operating','1975','JK Cement Annual Report FY24-25','https://www.jkcement.com/manufacturing-units/','2026-10-30'),
+('A016','JK Cement','Mangrol Plant','Rajasthan','Chittorgarh','Integrated','3.20','Operating','2001','JK Cement Annual Report FY24-25','https://www.jkcement.com/manufacturing-units/','2026-10-30'),
+('A017','JK Cement','Muddapur Plant','Karnataka','Bagalkot','Integrated','3.00','Operating','2009','JK Cement Annual Report FY24-25','https://www.jkcement.com/manufacturing-units/','2026-10-30'),
+('A018','JK Cement','Panna Plant','Madhya Pradesh','Panna','Integrated','4.00','Operating','2022','JK Cement BRSR Report FY24-25','p.6','2026-10-30'),
+('A019','JK Cement','Prayagraj Grinding Unit','Uttar Pradesh','Prayagraj','Grinding Unit','2.00','Operating','2024','JK Cement Annual Report FY24-25','p.19','2026-10-30'),
+('A020','Ramco Cements','Ramasamy Raja Nagar','Tamil Nadu','Virudhunagar','Integrated','2.00','Operating','1961','Ramco Cements Annual Report FY24-25','https://www.ramcocements.in/manufacturing-units','2026-10-30'),
+('A021','Ramco Cements','Alathiyur Plant','Tamil Nadu','Ariyalur','Integrated','3.05','Operating','1997','Ramco Cements Annual Report FY24-25','https://www.ramcocements.in/manufacturing-units','2026-10-30'),
+('A022','Ramco Cements','Jayanthipuram Plant','Andhra Pradesh','NTR District','Integrated','3.60','Operating','1987','Ramco Cements Annual Report FY24-25','https://www.ramcocements.in/manufacturing-units','2026-10-30'),
+('A023','Ramco Cements','Kolimigundla Plant','Andhra Pradesh','Nandyal','Integrated','2.25','Operating','2022','Ramco Cements Sustainability Report','p.12','2026-10-30'),
+('A024','Ambuja Cements','Maratha Cement Works','Maharashtra','Chandrapur','Integrated','4.80','Operating','2001','Ambuja Cements Integrated Report FY24-25','https://www.ambujacement.com/about-us/manufacturing-facilities','2026-10-30'),
+('A025','Ambuja Cements','Bhatapara Plant','Chhattisgarh','Baloda Bazar','Integrated','4.00','Operating','2010','Ambuja Cements Integrated Report FY24-25','p.28','2026-10-30'),
+('A026','Ambuja Cements','Rabriyawas Plant','Rajasthan','Pali','Integrated','3.20','Operating','1993','Ambuja Cements Integrated Report FY24-25','p.28','2026-10-30'),
+('A027','Ambuja Cements','Sankrail Grinding Unit','West Bengal','Howrah','Grinding Unit','2.40','Operating','2001','Ambuja Cements Integrated Report FY24-25','p.29','2026-10-30'),
+('A028','Ambuja Cements','Warisaliganj Grinding Unit','Bihar','Nawada','Grinding Unit','6.00','Under Construction','NA','Adani Cement Expansion Press Release','p.1','2026-10-30'),
+('A029','UltraTech Cement','Dhar Cement Works','Madhya Pradesh','Dhar','Integrated','3.50','Operating','2018','UltraTech Our Story Milestone Report','https://www.ultratechcement.com/about-us/our-story','2026-10-30'),
+('A030','Shree Cement','Panipat Grinding Unit','Haryana','Panipat','Grinding Unit','1500000','Operating','2015','Shree Cement Annual Report FY24-25','p.16','2026-10-30'),
+('A031','Dalmia Bharat ','Medinipur Grinding Unit','West Bengal','Paschim Medinipur','Grinding Unit','2.25','Operating','2018','Dalmia Bharat Integrated Report FY24-25','p.23','2026-10-30');
