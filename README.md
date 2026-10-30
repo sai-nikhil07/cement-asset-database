@@ -27,7 +27,7 @@ Company websites (manufacturing facility disclosures), integrated annual reports
 - **Overall Data Completeness:** **96.7%** (29 of 30 records contain complete capacity, location, and commissioning year data)
 
 ## Dashboard
-![Dashboard](dashboard.png)
+![Dashboard](dashboardd.png)
 
 ## Key Findings
 - **Regional Concentration:** **Rajasthan** holds **31.6% (35.90 MTPA)** of the total sampled capacity across 7 plants, followed by **Karnataka (15.0% | 17.00 MTPA)** and **Tamil Nadu (10.9% | 12.35 MTPA)**.
